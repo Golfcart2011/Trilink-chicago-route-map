@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>KORD Route Map</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Leaflet CSS -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+    #map {
+      width: 100%;
+      height: 100vh;
+    }
+  </style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+  /* =========================
+     MAP INITIALIZATION
+     ========================= */
+  const map = L.map('map').setView([41.9742, -87.9073], 2);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  /* =========================
+     AIRPORT DATABASE
+     ========================= */
+  const airports = {
+    KORD: { name: "Chicago O'Hare (KORD)", coords: [41.9742, -87.9073] },
+    AUH: { name: "Abu Dhabi (AUH)", coords: [24.4539, 54.3773] },
+    ADD: { name: "Addis Ababa (ADD)", coords: [8.9779, 38.7993] },
+    AMS: { name: "Amsterdam Schiphol (AMS)", coords: [52.3105, 4.7683] },
+    ATH: { name: "Athens (ATH)", coords: [37.9364, 23.9445] },
+    BCN: { name: "Barcelona (BCN)", coords: [41.2974, 2.0833] },
+    BEG: { name: "Belgrade (BEG)", coords: [44.8184, 20.3091] },
+    BRU: { name: "Brussels (BRU)", coords: [50.9010, 4.4844] },
+    CPH: { name: "Copenhagen (CPH)", coords: [55.6181, 12.6561] },
+    DOH: { name: "Doha (DOH)", coords: [25.2731, 51.6081] },
+    DUB: { name: "Dublin (DUB)", coords: [53.4264, -6.2499] },
+    EDI: { name: "Edinburgh (EDI)", coords: [55.9500, -3.3725] },
+    FRA: { name: "Frankfurt (FRA)", coords: [50.0379, 8.5622] },
+    HKG: { name: "Hong Kong (HKG)", coords: [22.3080, 113.9185] },
+    IST: { name: "Istanbul (IST)", coords: [41.2753, 28.7519] },
+    KRK: { name: "Krakow (KRK)", coords: [50.0777, 19.7848] },
+    LHR: { name: "London Heathrow (LHR)", coords: [51.4700, -0.4543] },
+    MAD: { name: "Madrid (MAD)", coords: [40.4720, -3.5610] },
+    YUL: { name: "Montreal (YUL)", coords: [45.4706, -73.7408] },
+    MUC: { name: "Munich (MUC)", coords: [48.3538, 11.7861] },
+    NAP: { name: "Naples (NAP)", coords: [40.8843, 14.2906] },
+    DEL: { name: "New Delhi (DEL)", coords: [28.5562, 77.1000] },
+    CDG: { name: "Paris CDG (CDG)", coords: [49.0097, 2.5479] },
+    PUJ: { name: "Punta Cana (PUJ)", coords: [18.5674, -68.3634] },
+    KEF: { name: "Reykjavik (KEF)", coords: [63.9850, -22.6056] },
+    FCO: { name: "Rome Fiumicino (FCO)", coords: [41.8003, 12.2389] },
+    GRU: { name: "São Paulo (GRU)", coords: [-23.4356, -46.4731] },
+    HND: { name: "Tokyo Haneda (HND)", coords: [35.5494, 139.7798] },
+    YYZ: { name: "Toronto Pearson (YYZ)", coords: [43.6777, -79.6248] },
+    TPE: { name: "Taipei (TPE)", coords: [25.0797, 121.2342] },
+    WAW: { name: "Warsaw (WAW)", coords: [52.1657, 20.9671] },
+    ZRH: { name: "Zurich (ZRH)", coords: [47.4581, 8.5555] }
+  };
+
+  /* =========================
+     ROUTES (KORD HUB)
+     ========================= */
+  const hub = "KORD";
+  const destinations = Object.keys(airports).filter(a => a !== hub);
+
+  destinations.forEach(dest => {
+    L.polyline(
+      [airports[hub].coords, airports[dest].coords],
+      {
+        color: "#1e90ff",
+        weight: 2,
+        opacity: 0.7
+      }
+    ).addTo(map);
+  });
+
+  /* =========================
+     MARKERS
+     ========================= */
+  for (const code in airports) {
+    const popupText =
+      code === hub
+        ? `<b>${airports[code].name}</b><br>Destinations:<br>${destinations.join("<br>")}`
+        : `<b>${airports[code].name}</b><br>Route: Chicago (KORD)`;
+
+    L.marker(airports[code].coords)
+      .addTo(map)
+      .bindPopup(popupText);
+  }
+</script>
+
+</body>
+</html>
