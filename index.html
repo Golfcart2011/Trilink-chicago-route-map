@@ -5,20 +5,29 @@
   <title>Airline Route Map</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Leaflet CSS -->
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
   <style>
-    body {
-      margin: 0;
-      padding: 0;
+    body { margin: 0; padding: 0; }
+    #map { width: 100%; height: 100vh; }
+
+    .legend {
+      background: white;
+      padding: 10px 12px;
+      font-family: Arial, sans-serif;
+      font-size: 13px;
+      line-height: 18px;
+      color: #333;
+      border-radius: 6px;
+      box-shadow: 0 0 6px rgba(0,0,0,0.25);
     }
-    #map {
-      width: 100%;
-      height: 100vh;
+
+    .legend i {
+      width: 18px;
+      height: 3px;
+      float: left;
+      margin-right: 8px;
+      margin-top: 7px;
     }
   </style>
 </head>
@@ -26,7 +35,6 @@
 
 <div id="map"></div>
 
-<!-- Leaflet JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
@@ -43,13 +51,9 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
    AIRPORT DATABASE
    ========================= */
 const airports = {
-  /* --- USA HUB --- */
   KORD: { name: "Chicago O'Hare (KORD)", coords: [41.9742, -87.9073] },
-
-  /* --- LYON HUB --- */
   LYS: { name: "Lyon Saint-Exupéry (LYS)", coords: [45.7256, 5.0811] },
 
-  /* --- EUROPE / WORLD --- */
   AMS: { name: "Amsterdam (AMS)", coords: [52.3105, 4.7683] },
   ATH: { name: "Athens (ATH)", coords: [37.9364, 23.9445] },
   BCN: { name: "Barcelona (BCN)", coords: [41.2974, 2.0833] },
@@ -65,7 +69,6 @@ const airports = {
   CDG: { name: "Paris CDG (CDG)", coords: [49.0097, 2.5479] },
   ZRH: { name: "Zurich (ZRH)", coords: [47.4581, 8.5555] },
 
-  /* --- LYON DESTINATIONS --- */
   BOD: { name: "Bordeaux (BOD)", coords: [44.8283, -0.7156] },
   LIG: { name: "Limoges (LIG)", coords: [45.8628, 1.1794] },
   NTE: { name: "Nantes (NTE)", coords: [47.1532, -1.6107] },
@@ -82,52 +85,83 @@ const airports = {
 };
 
 /* =========================
-   ROUTES
+   LAYER GROUPS
    ========================= */
+const trilinkRoutes = L.layerGroup();
+const lyonAirRoutes = L.layerGroup();
 
-/* --- KORD HUB ROUTES --- */
-const kordDestinations = [
-  "AMS","ATH","BCN","BEG","BRU","CPH","DUB","FRA","IST",
-  "LHR","MAD","MUC","CDG","ZRH"
-];
+const trilinkColor = "#b22234"; // US flag red
+const lyonColor = "#ff7f00";
 
-kordDestinations.forEach(dest => {
+/* =========================
+   TRILINK ROUTES (CHICAGO)
+   ========================= */
+[
+  "AMS","ATH","BCN","BEG","BRU","CPH","DUB",
+  "FRA","IST","LHR","MAD","MUC","CDG","ZRH",
+  "LYS" // ← Chicago ↔ Lyon added here
+].forEach(dest => {
   L.polyline(
     [airports.KORD.coords, airports[dest].coords],
-    { color: "#1e90ff", weight: 2, opacity: 0.7 }
-  ).addTo(map);
+    { color: trilinkColor, weight: 2.5, opacity: 0.8 }
+  ).addTo(trilinkRoutes);
 });
 
-/* --- LYON HUB ROUTES --- */
-const lyonDestinations = [
+/* =========================
+   LYON AIR ROUTES
+   ========================= */
+[
   "BOD","LIG","NTE","ATH","DKR","SAW","LIS","LGW",
   "RAK","MXP","ORN","PRG","TRN","LCY"
-];
-
-lyonDestinations.forEach(dest => {
+].forEach(dest => {
   L.polyline(
     [airports.LYS.coords, airports[dest].coords],
-    { color: "#ff7f00", weight: 2.5, opacity: 0.8 }
-  ).addTo(map);
+    { color: lyonColor, weight: 2.5, opacity: 0.8 }
+  ).addTo(lyonAirRoutes);
 });
+
+trilinkRoutes.addTo(map);
+lyonAirRoutes.addTo(map);
 
 /* =========================
    MARKERS
    ========================= */
 for (const code in airports) {
   let popup = `<b>${airports[code].name}</b>`;
-
-  if (code === "KORD") {
-    popup += "<br>Hub – Transatlantic & Global";
-  } else if (code === "LYS") {
-    popup += "<br>Hub – European & Regional";
-  }
+  if (code === "KORD") popup += "<br>Hub – Trilink Routes";
+  if (code === "LYS") popup += "<br>Hub – Lyon Air";
 
   L.marker(airports[code].coords)
     .addTo(map)
     .bindPopup(popup);
 }
+
+/* =========================
+   FILTER CONTROL
+   ========================= */
+L.control.layers(null, {
+  "Trilink Routes": trilinkRoutes,
+  "Lyon Air": lyonAirRoutes
+}, { collapsed: false }).addTo(map);
+
+/* =========================
+   LEGEND
+   ========================= */
+const legend = L.control({ position: "bottomright" });
+
+legend.onAdd = function () {
+  const div = L.DomUtil.create("div", "legend");
+  div.innerHTML = `
+    <strong>Route Legend</strong><br>
+    <i style="background:${trilinkColor}"></i> Trilink Routes<br>
+    <i style="background:${lyonColor}"></i> Lyon Air
+  `;
+  return div;
+};
+
+legend.addTo(map);
 </script>
 
 </body>
 </html>
+
