@@ -1,161 +1,174 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<title>Airline Route Map</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-
-<style>
-  body { margin:0; padding:0; }
-  #map { width:100%; height:100vh; }
-
-  .legend {
-    background:white;
-    padding:10px 12px;
-    font-family:Arial, sans-serif;
-    font-size:13px;
-    border-radius:6px;
-    box-shadow:0 0 6px rgba(0,0,0,0.25);
-  }
-  .legend i {
-    width:18px;
-    height:3px;
-    float:left;
-    margin-right:8px;
-    margin-top:7px;
-  }
-</style>
-</head>
-
-<body>
-<div id="map"></div>
-
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 
 /* =========================
-   MAP
-   ========================= */
-const map = L.map("map").setView([45,5], 2);
+MAP
+========================= */
+const map = L.map("map").setView([40,10],2);
 
-L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-  attribution: "&copy; OpenStreetMap contributors"
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{
+ attribution:"&copy; OpenStreetMap contributors"
 }).addTo(map);
 
 /* =========================
-   AIRPORT DATABASE
-   ========================= */
+AIRPORT DATABASE
+========================= */
+
 const airports = {
-  KORD:{name:"Chicago O'Hare (KORD)",coords:[41.9742,-87.9073],trilink:true,lyon:false},
-  LYS:{name:"Lyon Saint-Exupéry (LYS)",coords:[45.7256,5.0811],trilink:true,lyon:true},
 
-  AMS:{name:"Amsterdam (AMS)",coords:[52.3105,4.7683],trilink:true},
-  ATH:{name:"Athens (ATH)",coords:[37.9364,23.9445],trilink:true,lyon:true},
-  BCN:{name:"Barcelona (BCN)",coords:[41.2974,2.0833],trilink:true},
-  BEG:{name:"Belgrade (BEG)",coords:[44.8184,20.3091],trilink:true},
-  BRU:{name:"Brussels (BRU)",coords:[50.9010,4.4844],trilink:true},
-  CPH:{name:"Copenhagen (CPH)",coords:[55.6181,12.6561],trilink:true},
-  DUB:{name:"Dublin (DUB)",coords:[53.4264,-6.2499],trilink:true},
-  FRA:{name:"Frankfurt (FRA)",coords:[50.0379,8.5622],trilink:true},
-  IST:{name:"Istanbul (IST)",coords:[41.2753,28.7519],trilink:true},
-  LHR:{name:"London Heathrow (LHR)",coords:[51.47,-0.4543],trilink:true},
-  MAD:{name:"Madrid (MAD)",coords:[40.472,-3.561],trilink:true},
-  MUC:{name:"Munich (MUC)",coords:[48.3538,11.7861],trilink:true},
-  CDG:{name:"Paris CDG (CDG)",coords:[49.0097,2.5479],trilink:true},
-  ZRH:{name:"Zurich (ZRH)",coords:[47.4581,8.5555],trilink:true},
+PDX:{name:"Portland (PDX)",coords:[45.5898,-122.5951],pnw:true},
 
-  BOD:{name:"Bordeaux (BOD)",coords:[44.8283,-0.7156],lyon:true},
-  LIG:{name:"Limoges (LIG)",coords:[45.8628,1.1794],lyon:true},
-  NTE:{name:"Nantes (NTE)",coords:[47.1532,-1.6107],lyon:true},
-  DKR:{name:"Dakar (DKR)",coords:[14.7397,-17.4902],lyon:true},
-  SAW:{name:"Istanbul Sabiha (SAW)",coords:[40.8986,29.3092],lyon:true},
-  LIS:{name:"Lisbon (LIS)",coords:[38.7742,-9.1342],lyon:true},
-  LGW:{name:"London Gatwick (LGW)",coords:[51.1537,-0.1821],lyon:true},
-  RAK:{name:"Marrakesh (RAK)",coords:[31.6069,-8.0363],lyon:true},
-  MXP:{name:"Milan Malpensa (MXP)",coords:[45.6306,8.7281],lyon:true},
-  ORN:{name:"Oran (ORN)",coords:[35.6239,-0.6212],lyon:true},
-  PRG:{name:"Prague (PRG)",coords:[50.1008,14.2632],lyon:true},
-  TRN:{name:"Turin (TRN)",coords:[45.2008,7.6496],lyon:true},
-  LCY:{name:"London City (LCY)",coords:[51.5053,0.0553],lyon:true}
+ATL:{name:"Atlanta (ATL)",coords:[33.6407,-84.4277],pnw:true},
+ORD:{name:"Chicago O'Hare (ORD)",coords:[41.9742,-87.9073],pnw:true},
+DFW:{name:"Dallas Fort Worth (DFW)",coords:[32.8998,-97.0403],pnw:true},
+IAH:{name:"Houston (IAH)",coords:[29.9902,-95.3368],pnw:true},
+LAX:{name:"Los Angeles (LAX)",coords:[33.9416,-118.4085],pnw:true},
+MIA:{name:"Miami (MIA)",coords:[25.7959,-80.2871],pnw:true},
+JFK:{name:"New York JFK (JFK)",coords:[40.6413,-73.7781],pnw:true},
+SMF:{name:"Sacramento (SMF)",coords:[38.6954,-121.5908],pnw:true},
+SFO:{name:"San Francisco (SFO)",coords:[37.6213,-122.3790],pnw:true},
+SEA:{name:"Seattle Tacoma (SEA)",coords:[47.4502,-122.3088],pnw:true},
+DCA:{name:"Washington Reagan (DCA)",coords:[38.8512,-77.0402],pnw:true},
+
+AMS:{name:"Amsterdam (AMS)",coords:[52.3105,4.7683],pnw:true},
+DUB:{name:"Dublin (DUB)",coords:[53.4264,-6.2499],pnw:true},
+TLV:{name:"Tel Aviv (TLV)",coords:[32.0114,34.8867],pnw:true},
+ICN:{name:"Seoul Incheon (ICN)",coords:[37.4602,126.4407],pnw:true},
+PVG:{name:"Shanghai Pudong (PVG)",coords:[31.1443,121.8083],pnw:true},
+FRA:{name:"Frankfurt (FRA)",coords:[50.0379,8.5622],pnw:true},
+SGN:{name:"Ho Chi Minh City (SGN)",coords:[10.8188,106.6519],pnw:true},
+LHR:{name:"London Heathrow (LHR)",coords:[51.4700,-0.4543],pnw:true},
+TPE:{name:"Taipei (TPE)",coords:[25.0797,121.2342],pnw:true},
+HND:{name:"Tokyo Haneda (HND)",coords:[35.5494,139.7798],pnw:true},
+
+/* LYON NETWORK */
+
+LYS:{name:"Lyon (LYS)",coords:[45.7256,5.0811],lyon:true},
+BOD:{name:"Bordeaux (BOD)",coords:[44.8283,-0.7156],lyon:true},
+LIG:{name:"Limoges (LIG)",coords:[45.8628,1.1794],lyon:true},
+NTE:{name:"Nantes (NTE)",coords:[47.1532,-1.6107],lyon:true},
+ATH:{name:"Athens (ATH)",coords:[37.9364,23.9445],lyon:true},
+DKR:{name:"Dakar (DKR)",coords:[14.7397,-17.4902],lyon:true},
+SAW:{name:"Istanbul Sabiha (SAW)",coords:[40.8986,29.3092],lyon:true},
+LIS:{name:"Lisbon (LIS)",coords:[38.7742,-9.1342],lyon:true},
+LGW:{name:"London Gatwick (LGW)",coords:[51.1537,-0.1821],lyon:true},
+RAK:{name:"Marrakesh (RAK)",coords:[31.6069,-8.0363],lyon:true},
+MXP:{name:"Milan Malpensa (MXP)",coords:[45.6306,8.7281],lyon:true},
+ORN:{name:"Oran (ORN)",coords:[35.6239,-0.6212],lyon:true},
+PRG:{name:"Prague (PRG)",coords:[50.1008,14.2632],lyon:true},
+TRN:{name:"Turin (TRN)",coords:[45.2008,7.6496],lyon:true},
+LCY:{name:"London City (LCY)",coords:[51.5053,0.0553],lyon:true}
+
 };
 
 /* =========================
-   ROUTE LAYERS
-   ========================= */
-const trilinkRoutes = L.layerGroup();
+ROUTE LAYERS
+========================= */
+
+const pnwRoutes = L.layerGroup();
 const lyonRoutes = L.layerGroup();
 
-const trilinkColor = "#b22234";
+const pnwColor = "#1f7a3f";
 const lyonColor = "#ff7f00";
 
-Object.keys(airports).forEach(code=>{
-  if(airports[code].trilink && code!=="KORD")
-    L.polyline([airports.KORD.coords,airports[code].coords],
-      {color:trilinkColor,weight:2.5,opacity:0.8}).addTo(trilinkRoutes);
+/* PNW ROUTES */
 
-  if(airports[code].lyon && code!=="LYS")
-    L.polyline([airports.LYS.coords,airports[code].coords],
-      {color:lyonColor,weight:2.5,opacity:0.8}).addTo(lyonRoutes);
+[
+"ATL","ORD","DFW","IAH","LAX","MIA","JFK","SMF","SFO",
+"SEA","DCA","AMS","ICN","PVG","FRA","SGN","LHR","TPE","HND"
+].forEach(dest=>{
+ L.polyline(
+  [airports.PDX.coords,airports[dest].coords],
+  {color:pnwColor,weight:2.6,opacity:0.85}
+ ).addTo(pnwRoutes);
 });
 
-trilinkRoutes.addTo(map);
+/* MULTI STOP ROUTE */
+
+L.polyline(
+ [airports.PDX.coords,airports.DUB.coords],
+ {color:pnwColor,weight:2.6,opacity:0.85}
+).addTo(pnwRoutes);
+
+L.polyline(
+ [airports.DUB.coords,airports.TLV.coords],
+ {color:pnwColor,weight:2.6,opacity:0.85}
+).addTo(pnwRoutes);
+
+
+/* LYON ROUTES */
+
+Object.keys(airports).forEach(code=>{
+ if(airports[code].lyon && code!=="LYS"){
+  L.polyline(
+   [airports.LYS.coords,airports[code].coords],
+   {color:lyonColor,weight:2.5,opacity:0.8}
+  ).addTo(lyonRoutes);
+ }
+});
+
+pnwRoutes.addTo(map);
 lyonRoutes.addTo(map);
 
 /* =========================
-   AIRPORT MARKERS (DYNAMIC)
-   ========================= */
-const airportMarkers = {};
+AIRPORT MARKERS
+========================= */
+
+const markers={};
 
 Object.keys(airports).forEach(code=>{
-  airportMarkers[code] = L.marker(airports[code].coords)
-    .bindPopup(`<b>${airports[code].name}</b>`);
+ markers[code]=L.marker(airports[code].coords)
+  .bindPopup(`<b>${airports[code].name}</b>`);
 });
 
 /* =========================
-   MARKER VISIBILITY LOGIC
-   ========================= */
-function updateAirports(){
-  Object.keys(airports).forEach(code=>{
-    const a = airports[code];
-    const show =
-      (a.trilink && map.hasLayer(trilinkRoutes)) ||
-      (a.lyon && map.hasLayer(lyonRoutes));
+VISIBILITY LOGIC
+========================= */
 
-    if(show && !map.hasLayer(airportMarkers[code]))
-      airportMarkers[code].addTo(map);
-    if(!show && map.hasLayer(airportMarkers[code]))
-      map.removeLayer(airportMarkers[code]);
-  });
+function updateAirports(){
+
+ Object.keys(airports).forEach(code=>{
+
+  const a=airports[code];
+
+  const show=
+   (a.pnw && map.hasLayer(pnwRoutes)) ||
+   (a.lyon && map.hasLayer(lyonRoutes));
+
+  if(show && !map.hasLayer(markers[code])) markers[code].addTo(map);
+  if(!show && map.hasLayer(markers[code])) map.removeLayer(markers[code]);
+
+ });
+
 }
 
 updateAirports();
 
 /* =========================
-   FILTER CONTROL
-   ========================= */
+FILTER CONTROL
+========================= */
+
 L.control.layers(null,{
-  "Trilink Routes":trilinkRoutes,
-  "Lyon Air":lyonRoutes
+ "Pacific Northwest Airlines":pnwRoutes,
+ "Lyon Air":lyonRoutes
 },{collapsed:false}).addTo(map);
 
 map.on("overlayadd overlayremove",updateAirports);
 
 /* =========================
-   LEGEND
-   ========================= */
-const legend = L.control({position:"bottomright"});
-legend.onAdd = ()=>{
-  const d = L.DomUtil.create("div","legend");
-  d.innerHTML=`
-    <strong>Route Legend</strong><br>
-    <i style="background:${trilinkColor}"></i> Trilink Routes<br>
-    <i style="background:${lyonColor}"></i> Lyon Air`;
-  return d;
+LEGEND
+========================= */
+
+const legend=L.control({position:"bottomright"});
+
+legend.onAdd=()=>{
+ const d=L.DomUtil.create("div","legend");
+ d.innerHTML=`
+ <strong>Route Legend</strong><br>
+ <i style="background:${pnwColor}"></i> Pacific Northwest Airlines<br>
+ <i style="background:${lyonColor}"></i> Lyon Air`;
+ return d;
 };
+
 legend.addTo(map);
 
 </script>
-</body>
-</html>
